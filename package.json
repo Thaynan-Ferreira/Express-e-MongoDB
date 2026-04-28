@@ -1,0 +1,21 @@
+{
+  "name": "express-mongodb",
+  "version": "1.0.0",
+  "description": "Projeto desenvolvido durante um treinamento da Alura",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thaynan-Ferreira/Express-e-MongoDB.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Thaynan-Ferreira/Express-e-MongoDB/issues"
+  },
+  "homepage": "https://github.com/Thaynan-Ferreira/Express-e-MongoDB#readme"
+}
