@@ -58,4 +58,17 @@ app.put('/livros/:id', (req, res) => {
     }
 });
 
+// Rota para deletar um livro
+app.delete('/livros/:id', (req, res) => {
+    const livroIndex = getLivroById(req.params.id);
+
+    // Verifica se o livro existe antes de tentar deletar-lo
+    if (livroIndex !== -1) {
+        livros.splice(livroIndex, 1); // Remove o livro do array
+        res.status(200).send('Livro deletado com sucesso!');
+    } else {
+        res.status(404).send('Livro não encontrado!');
+    }
+});
+
 export default app; // Exportação da aplicação para ser utilizada em outros arquivos
