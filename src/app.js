@@ -1,6 +1,7 @@
 import express from 'express';
 
 const app = express(); // Criação da aplicação Express
+app.use(express.json()); // Middleware para parsear JSON no corpo das requisições
 
 //array de objetos de livros para simular um banco de dados
 const livros = [
@@ -17,6 +18,11 @@ app.get('/', (req, res) => {
 // Rota para listar todos os livros
 app.get('/livros', (req, res) => {
     res.status(200).json(livros);
+});
+
+app.post('/livros', (req, res) => {
+    livros.push(req.body);
+    res.status(201).send('Livro adicionado com sucesso!');
 });
 
 export default app; // Exportação da aplicação para ser utilizada em outros arquivos
