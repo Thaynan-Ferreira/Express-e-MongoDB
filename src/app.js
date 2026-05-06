@@ -1,27 +1,18 @@
 import express from 'express';
 import connectaNaDatabase from './config/dbConnect.js';
+import Livro from './models/Livro.js';
 
 const conexao = await connectaNaDatabase(); // Conexão com o banco de dados
 conexao.on('error', (erro) => {
-    console.error('Erro de conexão com o banco de dados: ' + erro)});
+    console.error('Erro de conexão com o banco de dados: ' + erro)
+});
 conexao.once('open', () => {
-    console.log('Conexão com o banco de dados estabelecida!')});
+    console.log('Conexão com o banco de dados estabelecida!')
+});
 
 const app = express(); // Criação da aplicação Express
 app.use(express.json()); // Middleware para parsear JSON no corpo das requisições
 
-//array de objetos de livros para simular um banco de dados
-const livros = [
-    { id: 1, titulo: 'O Senhor dos Anéis', autor: 'J.R.R. Tolkien' },
-    { id: 2, titulo: 'Harry Potter e a Pedra Filosofal', autor: 'J.K. Rowling' },
-    { id: 3, titulo: 'O Código Da Vinci', autor: 'Dan Brown' }
-];
-
-function getLivroById(id) {
-    return livros.findIndex(livro => {
-        return livro.id === Number(id);
-    })
-}
 
 // Rota para a página inicial
 app.get('/', (req, res) => {
@@ -29,8 +20,9 @@ app.get('/', (req, res) => {
 });
 
 // Rota para listar todos os livros
-app.get('/livros', (req, res) => {
-    res.status(200).json(livros);
+app.get('/livros', async (req, res) => {
+    const listaLivros = await Livro.find({});
+    res.status(200).json(listaLivros);
 });
 
 // Rota para obter um livro específico

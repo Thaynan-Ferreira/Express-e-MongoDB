@@ -1,7 +1,7 @@
 import mongoose, { mongo } from 'mongoose';
 
 async function connectaNaDatabase() {
-    mongoose.connect('mongodb://localhost:27017/livraria')
+    mongoose.connect(process.env.DB_CONNECTION_STRING)
 
     return mongoose.connection;
 
