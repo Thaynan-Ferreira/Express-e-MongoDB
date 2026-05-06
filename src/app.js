@@ -1,4 +1,11 @@
 import express from 'express';
+import connectaNaDatabase from './config/dbConnect.js';
+
+const conexao = await connectaNaDatabase(); // Conexão com o banco de dados
+conexao.on('error', (erro) => {
+    console.error('Erro de conexão com o banco de dados: ' + erro)});
+conexao.once('open', () => {
+    console.log('Conexão com o banco de dados estabelecida!')});
 
 const app = express(); // Criação da aplicação Express
 app.use(express.json()); // Middleware para parsear JSON no corpo das requisições
