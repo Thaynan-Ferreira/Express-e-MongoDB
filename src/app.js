@@ -1,6 +1,6 @@
 import express from 'express';
 import connectaNaDatabase from './config/dbConnect.js';
-import Livro from './models/Livro.js';
+import routes from './routes/index.js';
 
 const conexao = await connectaNaDatabase(); // Conexão com o banco de dados
 conexao.on('error', (erro) => {
@@ -11,15 +11,7 @@ conexao.once('open', () => {
 });
 
 const app = express(); // Criação da aplicação Express
-app.use(express.json()); // Middleware para parsear JSON no corpo das requisições
-
-
-// Rota para a página inicial
-app.get('/', (req, res) => {
-    res.status(200).send('Bem-vindo à página inicial!');
-});
-
-
+routes(app); // Configuração das rotas da aplicação
 
 // Rota para obter um livro específico
 app.get('/livros/:id', (req, res) => {
