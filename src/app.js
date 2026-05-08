@@ -19,11 +19,7 @@ app.get('/', (req, res) => {
     res.status(200).send('Bem-vindo à página inicial!');
 });
 
-// Rota para listar todos os livros
-app.get('/livros', async (req, res) => {
-    const listaLivros = await Livro.find({});
-    res.status(200).json(listaLivros);
-});
+
 
 // Rota para obter um livro específico
 app.get('/livros/:id', (req, res) => {
