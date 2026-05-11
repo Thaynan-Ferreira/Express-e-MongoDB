@@ -1,5 +1,8 @@
 import express from 'express';
 import livros from '../routes/livrosRoutes.js';
+import autores from '../routes/autoresRoutes.js';
+
+// Função de configuração das rotas
 
 const routes = (app) => {
     // Rota para a página inicial
@@ -10,7 +13,8 @@ const routes = (app) => {
     // Rota para listar todos os livros
     app.use(
         express.json(),
-        livros
+        livros,
+        autores
     );
 };
 

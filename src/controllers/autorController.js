@@ -1,4 +1,4 @@
-import autor from '../models/livro.js';
+import { autor } from '../models/Autor.js';
 
 // Controlador para gerenciar as operações relacionadas aos autores
 class AutorController {
@@ -17,7 +17,7 @@ class AutorController {
      static async listarAutorPorId(req, res) {
         try {
             const id = req.params.id; // Obtém o ID do autor a partir dos parâmetros da URL
-            const autorEncontrado = await livro.findById(id);
+            const autorEncontrado = await autor.findById(id);
             res.status(200).json(autorEncontrado);
         } catch (error) {
             res.status(500).json({ message: `Erro ao listar autor: ${error.message}`, error: error.message });
