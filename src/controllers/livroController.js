@@ -60,7 +60,17 @@ class LivroController {
         } catch (error) {
             res.status(500).json({ message: `Erro ao deletar livro: ${error.message}`, error: error.message });
         }
+    };
+
+    static async listarLivrosPorEditora(req, res) {
+        const editora = req.query.editora; // Obtém o nome da editora a partir dos parâmetros de consulta
+        try {
+            const livrosPorEditora = await livro.find({ editora: editora }); // Busca os livros que correspondem à editora fornecida
+            res.status(200).json(livrosPorEditora); // Retorna a lista de livros encontrados
+        } catch (error) {
+            res.status(500).json({ message: `Erro ao listar livros por editora: ${error.message}`, error: error.message });
+        }
     }
-}
+};
 
 export default LivroController;
