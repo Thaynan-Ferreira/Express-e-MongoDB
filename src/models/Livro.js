@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { autorSchema } from "./Autor.js";
 
 //objeto de configuração do modelo de dados, onde definimos os campos e seus tipos
 const livroSchema = new mongoose.Schema({
@@ -6,7 +7,8 @@ const livroSchema = new mongoose.Schema({
     titulo: { type: String, required: true },
     editora: { type: String},
     preco: { type: Number },
-    paginas: { type: Number }
+    paginas: { type: Number },
+    autor: autorSchema // Campo de referência para o autor, utilizando o schema do autor para garantir a estrutura correta dos dados relacionados ao autor do livro
 }, { versionKey: false } // Desativa o campo __v que o Mongoose adiciona por padrão
 );
 

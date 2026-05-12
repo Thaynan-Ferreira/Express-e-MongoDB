@@ -1,4 +1,5 @@
 import livro from '../models/livro.js';
+import { autor } from '../models/Autor.js';
 
 // Controlador para gerenciar as operações relacionadas aos livros
 class LivroController {
@@ -27,8 +28,12 @@ class LivroController {
 
     // Método para cadastrar um novo livro
     static async cadastrarLivro(req, res) {
+        
+        const novoLivro = req.body;
         try {
-            const novoLivro = await livro.create(req.body);
+            const autorEncontrado = await autor.findById(novoLivro.autor); // Verifica se o autor existe no banco de dados
+            const livroCompleto = { ...novoLivro, autor: {...autorEncontrado._doc} }; // Substitui o ID do autor pelo objeto completo do autor
+            const livroCriado = await livro.create(livroCompleto); // Cria o livro com o objeto completo do autor
             res.status(201).json({ message: 'Livro cadastrado com sucesso!', livro: novoLivro }); // Retorna o livro cadastrado junto com a mensagem de sucesso
 
         } catch (error) {
