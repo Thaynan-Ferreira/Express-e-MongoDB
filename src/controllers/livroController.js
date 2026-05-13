@@ -5,9 +5,11 @@ import { autor } from '../models/Autor.js';
 class LivroController {
 
     // Método para listar todos os livros
-    static async listarLivros(req, res) {
+    static listarLivros = async (req, res) => {
         try {
-            const listaLivros = await livro.find({});
+            const listaLivros = await livro.find()
+            .populate("autor")
+            .exec();
             res.status(200).json(listaLivros);
         } catch (error) {
             res.status(500).json({ message: `Erro ao listar livros: ${error.message}`, error: error.message });
@@ -15,10 +17,12 @@ class LivroController {
     }
 
     // Método para listar um livro específico por ID
-     static async listarLivroPorId(req, res) {
+     static listarLivroPorId = async (req, res) => {
         try {
             const id = req.params.id; // Obtém o ID do livro a partir dos parâmetros da URL
-            const livroEncontrado = await livro.findById(id);
+            const livroEncontrado = await livro.findById(id)
+            .populate("autor", "nome")
+            .exec();
             res.status(200).json(livroEncontrado);
         } catch (error) {
             res.status(500).json({ message: `Erro ao listar livro: ${error.message}`, error: error.message });
@@ -27,24 +31,23 @@ class LivroController {
 
 
     // Método para cadastrar um novo livro
-    static async cadastrarLivro(req, res) {
+    static cadastrarLivro = async (req, res) => {
         
-        const novoLivro = req.body;
         try {
-            const autorEncontrado = await autor.findById(novoLivro.autor); // Verifica se o autor existe no banco de dados
-            const livroCompleto = { ...novoLivro, autor: {...autorEncontrado._doc} }; // Substitui o ID do autor pelo objeto completo do autor
-            const livroCriado = await livro.create(livroCompleto); // Cria o livro com o objeto completo do autor
-            res.status(201).json({ message: 'Livro cadastrado com sucesso!', livro: novoLivro }); // Retorna o livro cadastrado junto com a mensagem de sucesso
+            let livro = new livro(req.body);
+
+            const livroCriado = await livro.save();
+            res.status(201).json({ message: 'Livro cadastrado com sucesso!', livro: livroCriado }); // Retorna o livro cadastrado junto com a mensagem de sucesso
 
         } catch (error) {
             res.status(500).json({ message: `Erro ao cadastrar livro: ${error.message}`, error: error.message });
         }
     }
 
-       static async atualizarLivro(req, res) {
+       static atualizarLivro = async (req, res) => {
         try {
             const id = req.params.id; // Obtém o ID do livro a partir dos parâmetros da URL
-            await livro.findByIdAndUpdate(id, req.body);
+            await livro.findByIdAndUpdate(id, {$set: req.body});
             res.status(200).json({ message: 'Livro atualizado com sucesso!' });
         } catch (error) {
             res.status(500).json({ message: `Erro ao atualizar livro: ${error.message}`, error: error.message });
@@ -52,7 +55,7 @@ class LivroController {
     }
 
     // Método para deletar um livro
-    static async deletarLivro(req, res) {
+    static deletarLivro = async (req, res) => {
         try {
             const id = req.params.id; // Obtém o ID do livro a partir dos parâmetros da URL
             await livro.findByIdAndDelete(id);
@@ -62,9 +65,9 @@ class LivroController {
         }
     };
 
-    static async listarLivrosPorEditora(req, res) {
-        const editora = req.query.editora; // Obtém o nome da editora a partir dos parâmetros de consulta
+    static listarLivrosPorEditora = async (req, res) => {
         try {
+            const editora = req.query.editora; // Obtém o nome da editora a partir dos parâmetros de consulta
             const livrosPorEditora = await livro.find({ editora: editora }); // Busca os livros que correspondem à editora fornecida
             res.status(200).json(livrosPorEditora); // Retorna a lista de livros encontrados
         } catch (error) {

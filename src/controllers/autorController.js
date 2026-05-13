@@ -4,9 +4,9 @@ import { autor } from '../models/Autor.js';
 class AutorController {
 
     // Método para listar todos os autores  
-    static async listarAutores(req, res) {
+    static listarAutores = async (req, res) => {
         try {
-            const listaAutores = await autor.find({});
+            const listaAutores = await autor.find();
             res.status(200).json(listaAutores);
         } catch (error) {
             res.status(500).json({ message: `Erro ao listar autores: ${error.message}`, error: error.message });
@@ -14,7 +14,7 @@ class AutorController {
     }
 
     // Método para listar um autor específico por ID
-     static async listarAutorPorId(req, res) {
+      static listarAutorPorId = async (req, res) => {
         try {
             const id = req.params.id; // Obtém o ID do autor a partir dos parâmetros da URL
             const autorEncontrado = await autor.findById(id);
@@ -26,20 +26,22 @@ class AutorController {
 
 
     // Método para cadastrar um novo autor
-    static async cadastrarAutor(req, res) {
+    static cadastrarAutor = async (req, res) => {
         try {
-            const novoAutor = await autor.create(req.body);
-            res.status(201).json({ message: 'Autor cadastrado com sucesso!', autor: novoAutor }); // Retorna o autor cadastrado junto com a mensagem de sucesso
+            let autor = new autores(req.body);
+            const autorResultado = await autor.save();
+
+            res.status(201).json({ message: 'Autor cadastrado com sucesso!', autor: autorResultado }); // Retorna o autor cadastrado junto com a mensagem de sucesso
 
         } catch (error) {
             res.status(500).json({ message: `Erro ao cadastrar autor: ${error.message}`, error: error.message });
         }
     }
 
-       static async atualizarAutor(req, res) {
+       static atualizarAutor = async (req, res) => {
         try {
             const id = req.params.id; // Obtém o ID do autor a partir dos parâmetros da URL
-            await autor.findByIdAndUpdate(id, req.body);
+            await autor.findByIdAndUpdate(id, {$set: req.body});
             res.status(200).json({ message: 'Autor atualizado com sucesso!' });
         } catch (error) {
             res.status(500).json({ message: `Erro ao atualizar autor: ${error.message}`, error: error.message });
@@ -47,7 +49,7 @@ class AutorController {
     }
 
     // Método para deletar um autor
-    static async deletarAutor(req, res) {
+    static deletarAutor = async (req, res) => {
         try {
             const id = req.params.id; // Obtém o ID do autor a partir dos parâmetros da URL
             await autor.findByIdAndDelete(id);
