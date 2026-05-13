@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { autor } from '../models/Autor.js';
 
 // Controlador para gerenciar as operações relacionadas aos autores
@@ -18,9 +19,20 @@ class AutorController {
         try {
             const id = req.params.id; // Obtém o ID do autor a partir dos parâmetros da URL
             const autorEncontrado = await autor.findById(id);
-            res.status(200).json(autorEncontrado);
+
+            if (autorEncontrado !== null) {
+                res.status(200).send(autorEncontrado);
+                
+            } else {
+                res.status(404).send({ message: `Id do autor não encontrado: ${id}` });
+            }
         } catch (error) {
-            res.status(500).json({ message: `Erro ao listar autor: ${error.message}`, error: error.message });
+            if (error instanceof mongoose.Error.CastError) {
+                res.status(400).send({ message: "Id do autor inválido"});
+            }
+            else {
+                res.status(500).send({ message: "Erro interno de servidor" });
+            }
         }
     }
 
