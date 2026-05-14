@@ -1,6 +1,7 @@
 import express from 'express';
 import connectaNaDatabase from './config/dbConnect.js';
 import routes from './routes/index.js';
+import manipuladorDeErros from './middlewares/manipuladorDeErros.js';
 
 const conexao = await connectaNaDatabase(); // Conexão com o banco de dados
 conexao.on('error', (erro) => {
@@ -13,6 +14,8 @@ conexao.once('open', () => {
 const app = express(); // Criação da aplicação Express
 routes(app); // Configuração das rotas da aplicação
 
+
+app.use(manipuladorDeErros);
 
 
 export default app; // Exportação da aplicação para ser utilizada em outros arquivos
