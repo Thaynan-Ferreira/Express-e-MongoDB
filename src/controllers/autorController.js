@@ -35,8 +35,8 @@ class AutorController {
     // Método para cadastrar um novo autor
     static cadastrarAutor = async (req, res, next) => {
         try {
-            let autor = new autores(req.body);
-            const autorResultado = await autor.save();
+            let novoAutor = new autor(req.body);
+            const autorResultado = await novoAutor.save();
 
             res.status(201).json({ message: 'Autor cadastrado com sucesso!', autor: autorResultado }); // Retorna o autor cadastrado junto com a mensagem de sucesso
 

@@ -34,9 +34,9 @@ class LivroController {
     static cadastrarLivro = async (req, res, next) => {
         
         try {
-            let livro = new livro(req.body);
+            let novoLivro = new livro(req.body);
 
-            const livroCriado = await livro.save();
+            const livroCriado = await novoLivro.save();
             res.status(201).json({ message: 'Livro cadastrado com sucesso!', livro: livroCriado }); // Retorna o livro cadastrado junto com a mensagem de sucesso
 
         } catch (error) {
