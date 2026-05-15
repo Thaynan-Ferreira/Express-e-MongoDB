@@ -1,21 +1,21 @@
 import mongoose from "mongoose";
+import ErroBase from "../erros/ErroBase.js";
+import RequisicaoIncorreta from "../erros/RequisicaoIncorreta.js";
+import ErroValidacao from "../erros/ErroValidacao.js";
 
 // Middleware para manipulação de erros
 function manipuladorDeErros(error, req, res, next) {
     console.error(error);
     if (error instanceof mongoose.Error.CastError) {
-        res.status(400).send({ message: "Id do autor inválido"});
+        new RequisicaoIncorreta().enviarResposta(res); // Envia uma resposta de erro para requisição incorreta quando há um erro de conversão de tipo do Mongoose
     }
     // Verifica se o erro é uma validação de dados do Mongoose
     else if (error instanceof mongoose.Error.ValidationError) {
-        // Extrai as mensagens de erro de validação e as envia na resposta
-        const mensagensDeErro = Object.values(error.errors)
-        .map(erro => erro.message)
-        .join("; ");
-        res.status(400).send({ message: `Os seguintes erros foram encontrados: ${mensagensDeErro}` });
+        new ErroValidacao(error).enviarResposta(res); // Envia uma resposta de erro personalizada para erros de validação, utilizando a classe ErroValidacao
+        
     }
     else {
-        res.status(500).send({ message: "Erro interno de servidor" });
+        new ErroBase().enviarResposta(res); // Envia uma resposta de erro genérica para outros tipos de erros
     }
 }
 
