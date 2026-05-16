@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { autor } from '../models/Autor.js';
+import NaoEncontrado from '../erros/NaoEncontrado.js';
 
 // Controlador para gerenciar as operações relacionadas aos autores
 class AutorController {
@@ -24,7 +25,7 @@ class AutorController {
                 res.status(200).send(autorEncontrado);
                 
             } else {
-                res.status(404).send({ message: `Id do autor não encontrado: ${id}` });
+                next(new NaoEncontrado(`Id do autor não encontrado: ${id}`)); // Passa um erro de "Não Encontrado" para o middleware de tratamento de erros caso o autor não seja encontrado
             }
         } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
@@ -48,8 +49,12 @@ class AutorController {
        static atualizarAutor = async (req, res, next) => {
         try {
             const id = req.params.id; // Obtém o ID do autor a partir dos parâmetros da URL
-            await autor.findByIdAndUpdate(id, {$set: req.body});
-            res.status(200).json({ message: 'Autor atualizado com sucesso!' });
+            const autorAtualizado = await autor.findByIdAndUpdate(id, {$set: req.body});
+            if (autorAtualizado !== null) {
+                res.status(200).send(autorAtualizado);
+            } else {
+                next(new NaoEncontrado(`Id do autor não encontrado: ${id}`)); // Passa um erro de "Não Encontrado" para o middleware de tratamento de erros caso o autor não seja encontrado
+            }
         } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
         }
@@ -59,8 +64,12 @@ class AutorController {
     static deletarAutor = async (req, res, next) => {
         try {
             const id = req.params.id; // Obtém o ID do autor a partir dos parâmetros da URL
-            await autor.findByIdAndDelete(id);
-            res.status(200).json({ message: 'Autor deletado com sucesso!' });
+            const autorDeletado = await autor.findByIdAndDelete(id);
+            if (autorDeletado !== null) {
+                res.status(200).json({ message: 'Autor deletado com sucesso!' });
+            } else {
+                next(new NaoEncontrado(`Id do autor não encontrado: ${id}`)); // Passa um erro de "Não Encontrado" para o middleware de tratamento de erros caso o autor não seja encontrado
+            }
         } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
         }

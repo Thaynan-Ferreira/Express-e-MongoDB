@@ -1,5 +1,6 @@
 import livro from '../models/livro.js';
 import { autor } from '../models/Autor.js';
+import NaoEncontrado from '../erros/NaoEncontrado.js';
 
 // Controlador para gerenciar as operações relacionadas aos livros
 class LivroController {
@@ -23,7 +24,12 @@ class LivroController {
             const livroEncontrado = await livro.findById(id)
             .populate("autor", "nome")
             .exec();
-            res.status(200).json(livroEncontrado);
+            if (livroEncontrado !== null) {
+                res.status(200).send(livroEncontrado);
+                            
+            } else {
+                next(new NaoEncontrado(`Id do livro não encontrado: ${id}`)); // Passa um erro de "Não Encontrado" para o middleware de tratamento de erros caso o livro não seja encontrado
+            }
         } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
         }
@@ -47,8 +53,13 @@ class LivroController {
        static atualizarLivro = async (req, res, next) => {
         try {
             const id = req.params.id; // Obtém o ID do livro a partir dos parâmetros da URL
-            await livro.findByIdAndUpdate(id, {$set: req.body});
-            res.status(200).json({ message: 'Livro atualizado com sucesso!' });
+            const livroAtualizado = await livro.findByIdAndUpdate(id, {$set: req.body});
+            if (livroAtualizado !== null) {
+                res.status(200).send(livroAtualizado);
+                            
+            } else {
+                next(new NaoEncontrado(`Id do livro não encontrado: ${id}`)); // Passa um erro de "Não Encontrado" para o middleware de tratamento de erros caso o livro não seja encontrado
+            }
         } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
         }
@@ -58,8 +69,12 @@ class LivroController {
     static deletarLivro = async (req, res, next) => {
         try {
             const id = req.params.id; // Obtém o ID do livro a partir dos parâmetros da URL
-            await livro.findByIdAndDelete(id);
-            res.status(200).json({ message: 'Livro deletado com sucesso!' });
+            const livroDeletado = await livro.findByIdAndDelete(id);
+            if (livroDeletado !== null) {
+                res.status(200).json({ message: 'Livro deletado com sucesso!' });
+            } else {
+                next(new NaoEncontrado(`Id do livro não encontrado: ${id}`)); // Passa um erro de "Não Encontrado" para o middleware de tratamento de erros caso o livro não seja encontrado
+            }
         } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
         }
