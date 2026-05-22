@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { autor } from '../models/Autor.js';
+import { autor } from '../models/index.js';
 import NaoEncontrado from '../erros/NaoEncontrado.js';
 
 // Controlador para gerenciar as operações relacionadas aos autores

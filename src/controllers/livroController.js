@@ -1,4 +1,4 @@
-import livro from '../models/livro.js';
+import { livro } from '../models/index.js';
 import { autor } from '../models/Autor.js';
 import NaoEncontrado from '../erros/NaoEncontrado.js';
 
