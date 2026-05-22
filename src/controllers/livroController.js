@@ -82,20 +82,33 @@ class LivroController {
 
     static listarLivrosPorFiltro = async (req, res, next) => {
         try {
-            const { editora, titulo } = req.query; // Obtém o nome da editora a partir dos parâmetros de consulta
+          const busca = processaFiltros(req.query);
 
-            const busca = {};
-
-            if (editora) busca.editora = editora; // Adiciona o filtro de editora à busca se for fornecido
-            if (titulo) busca.titulo = titulo; // Adiciona o filtro de título à busca se for fornecido
-
-            const livrosPorEditora = await livro.find(busca); // Busca os livros que correspondem aos critérios de busca
+          const livrosPorEditora = await livro.find(busca); // Busca os livros que correspondem aos critérios de busca
 
             res.status(200).json(livrosPorEditora); // Retorna a lista de livros encontrados
         } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
         }
     }
+
 };
+
+function processaFiltros(query) {
+
+    const { editora, titulo, minPaginas, maxPaginas } = query; // Obtém o nome da editora a partir dos parâmetros de consulta
+
+
+    const busca = {};
+
+    if (editora) busca.editora = { $regex: editora, $options: 'i' }; // Adiciona o filtro de editora à busca se for fornecido
+    if (titulo) busca.titulo = { $regex: titulo, $options: 'i' }; // Adiciona o filtro de título à busca se for fornecido
+
+    if (minPaginas || maxPaginas) busca.paginas = {}; // Inicializa o filtro de páginas se pelo menos um dos filtros de páginas for fornecido
+    if (minPaginas) busca.paginas.$gte = minPaginas; // Adiciona o filtro de mínimo de páginas à busca se for fornecido
+    if (maxPaginas) busca.paginas.$lte = maxPaginas; // Adiciona o filtro de máximo de páginas à busca se for fornecido
+
+    return busca; // Retorna o objeto de busca com os filtros aplicados    
+}
 
 export default LivroController;
