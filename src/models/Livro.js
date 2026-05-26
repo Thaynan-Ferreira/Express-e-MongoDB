@@ -20,7 +20,11 @@ const livroSchema = new mongoose.Schema({
         min: [ 1, "O número de páginas deve ser maior que zero. Valor fornecido {VALUE}" ], // Define o valor mínimo permitido para o campo paginas
         max: [ 10000, "O número de páginas deve ser menor que 10.000. Valor fornecido {VALUE}" ] // Define o valor máximo permitido para o campo paginas
     },
-    autor: { type: mongoose.Schema.Types.ObjectId, ref: 'autores' } // Campo de referência para o autor, armazena apenas o ID do documento na coleção 'autores'
+    autor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'autores' // Campo de referência para o autor, armazena apenas o ID do documento na coleção 'autores'
+    } 
+
 }, { versionKey: false } // Desativa o campo __v que o Mongoose adiciona por padrão
 );
 

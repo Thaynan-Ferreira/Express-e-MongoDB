@@ -1,5 +1,4 @@
-import { livro } from '../models/index.js';
-import { autor } from '../models/Autor.js';
+import { livro, autor } from '../models/index.js';
 import NaoEncontrado from '../erros/NaoEncontrado.js';
 
 // Controlador para gerenciar as operações relacionadas aos livros
@@ -82,24 +81,29 @@ class LivroController {
 
     static listarLivrosPorFiltro = async (req, res, next) => {
         try {
-          const busca = processaFiltros(req.query);
+            const busca = await processaFiltros(req.query);
 
-          const livrosPorEditora = await livro.find(busca); // Busca os livros que correspondem aos critérios de busca
-
-            res.status(200).json(livrosPorEditora); // Retorna a lista de livros encontrados
-        } catch (error) {
+            if (busca !== null) {
+                const livrosPorEditora = await livro
+                    .find(busca) // Busca os livros que correspondem aos critérios de busca
+                    .populate("autor", "nome") // Popula o campo de autor com o nome do autor
+        
+                res.status(200).json(livrosPorEditora); // Retorna a lista de livros encontrados
+            } else {
+                res.status(200).send([]); // Retorna uma lista vazia caso nenhum livro corresponda aos critérios de busca
+            }
+        }catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
         }
     }
 
 };
 
-function processaFiltros(query) {
+async function processaFiltros(query) {
 
-    const { editora, titulo, minPaginas, maxPaginas } = query; // Obtém o nome da editora a partir dos parâmetros de consulta
+    const { editora, titulo, minPaginas, maxPaginas, nomeAutor } = query; // Obtém o nome da editora a partir dos parâmetros de consulta
 
-
-    const busca = {};
+    let busca = {};
 
     if (editora) busca.editora = { $regex: editora, $options: 'i' }; // Adiciona o filtro de editora à busca se for fornecido
     if (titulo) busca.titulo = { $regex: titulo, $options: 'i' }; // Adiciona o filtro de título à busca se for fornecido
@@ -107,6 +111,17 @@ function processaFiltros(query) {
     if (minPaginas || maxPaginas) busca.paginas = {}; // Inicializa o filtro de páginas se pelo menos um dos filtros de páginas for fornecido
     if (minPaginas) busca.paginas.$gte = minPaginas; // Adiciona o filtro de mínimo de páginas à busca se for fornecido
     if (maxPaginas) busca.paginas.$lte = maxPaginas; // Adiciona o filtro de máximo de páginas à busca se for fornecido
+
+    if (nomeAutor) {
+        const autores = await autor.findOne({ nome: nomeAutor }); // Busca o autor pelo nome fornecido
+
+        if (autores !== null) {
+            busca.autor = autores._id; // Adiciona o filtro de autor à busca usando o ID do autor
+        } else {
+            busca = null; // Define o filtro de autor como null para garantir que nenhum livro seja retornado se o autor não for encontrado
+        }
+        
+    }
 
     return busca; // Retorna o objeto de busca com os filtros aplicados    
 }
