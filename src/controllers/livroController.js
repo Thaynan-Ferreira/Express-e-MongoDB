@@ -7,9 +7,13 @@ class LivroController {
     // Método para listar todos os livros
     static listarLivros = async (req, res, next) => {
         try {
+            const { limite = 2, pagina = 1 } = req.query; // Obtém os parâmetros de limite e página a partir dos parâmetros de consulta
+
             const listaLivros = await livro.find()
-            .populate("autor")
-            .exec();
+                .skip((pagina - 1) * limite) // Calcula o número de documentos a pular com base na página e no limite
+                .limit(Number(limite)) // Limita o número de documentos retornados com base no limite
+                .populate("autor")
+                .exec();
             res.status(200).json(listaLivros);
         } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
