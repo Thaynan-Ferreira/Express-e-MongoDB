@@ -1,5 +1,6 @@
 import { livro, autor } from '../models/index.js';
 import NaoEncontrado from '../erros/NaoEncontrado.js';
+import RequisicaoIncorreta from '../erros/RequisicaoIncorreta.js';
 
 // Controlador para gerenciar as operações relacionadas aos livros
 class LivroController {
@@ -7,14 +8,23 @@ class LivroController {
     // Método para listar todos os livros
     static listarLivros = async (req, res, next) => {
         try {
-            const { limite = 2, pagina = 1 } = req.query; // Obtém os parâmetros de limite e página a partir dos parâmetros de consulta
+            let { limite = 2, pagina = 1 } = req.query; // Obtém os parâmetros de limite e página a partir dos parâmetros de consulta
 
-            const listaLivros = await livro.find()
-                .skip((pagina - 1) * limite) // Calcula o número de documentos a pular com base na página e no limite
-                .limit(Number(limite)) // Limita o número de documentos retornados com base no limite
-                .populate("autor")
-                .exec();
-            res.status(200).json(listaLivros);
+            limite = Number(limite); // Converte o limite para um número
+            pagina = Number(pagina); // Converte a página para um número
+
+            if (limite <= 0 || pagina <= 0) {
+                next( new RequisicaoIncorreta());
+            } else {
+                const listaLivros = await livro.find()
+                    .skip((pagina - 1) * limite) // Calcula o número de documentos a pular com base na página e no limite
+                    .limit(Number(limite)) // Limita o número de documentos retornados com base no limite
+                    .populate("autor")
+                    .exec();
+                res.status(200).json(listaLivros);
+
+            }
+
         } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
         }

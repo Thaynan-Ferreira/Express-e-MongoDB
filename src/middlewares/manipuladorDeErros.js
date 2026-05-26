@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import ErroBase from "../erros/ErroBase.js";
 import RequisicaoIncorreta from "../erros/RequisicaoIncorreta.js";
 import ErroValidacao from "../erros/ErroValidacao.js";
-import NaoEncontrado from "../erros/NaoEncontrado.js";
 
 // Middleware para manipulação de erros
 function manipuladorDeErros(error, req, res, next) {
@@ -15,7 +14,7 @@ function manipuladorDeErros(error, req, res, next) {
         new ErroValidacao(error).enviarResposta(res); // Envia uma resposta de erro personalizada para erros de validação, utilizando a classe ErroValidacao
         
     }
-    else if (error instanceof NaoEncontrado) {
+    else if (error instanceof ErroBase) {
         error.enviarResposta(res);
     }
     else {
