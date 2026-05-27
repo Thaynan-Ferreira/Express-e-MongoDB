@@ -27,19 +27,23 @@ Este repositório foi desenvolvido com o objetivo de praticar a criação de API
 1. Clone o repositório:
 ```bash
    git clone [https://github.com/Thaynan-Ferreira/Express-e-MongoDB.git](https://github.com/Thaynan-Ferreira/Express-e-MongoDB.git)
-
+```
 2. Acesse a pasta do projeto:
 ```bash
    cd Express-e-MongoDB
+```
 
 3. Instale as dependências necessarias:
 ```bash
    npm install
+```
 
 4. Configure suas varíaveis de ambiente:
 ```Snippet de código
    DB_CONNECTION_STRING=sua_string_de_conexao_do_mongodb
+```
 
 5. Inicie o servidor de desenvolvimento:
 ```bash
    npm run dev
+```
