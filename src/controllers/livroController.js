@@ -1,6 +1,5 @@
 import { livro, autor } from '../models/index.js';
 import NaoEncontrado from '../erros/NaoEncontrado.js';
-import RequisicaoIncorreta from '../erros/RequisicaoIncorreta.js';
 
 // Controlador para gerenciar as operações relacionadas aos livros
 class LivroController {
@@ -8,27 +7,10 @@ class LivroController {
     // Método para listar todos os livros
     static listarLivros = async (req, res, next) => {
         try {
-            let { limite = 5, pagina = 1, ordenacao = "_id:-1" } = req.query; // Obtém os parâmetros de limite e página a partir dos parâmetros de consulta
+            const buscaLivros = livro.find();
 
-            let [campoOrdenacao, ordem] = ordenacao.split(":"); // Divide o parâmetro de ordenação em campo e ordem
-
-            limite = Number(limite); // Converte o limite para um número
-            pagina = Number(pagina); // Converte a página para um número
-            ordem = Number(ordem); // Converte a ordem para um número
-            campoOrdenacao = campoOrdenacao; // Obtém o campo de ordenação
-
-            if (limite <= 0 || pagina <= 0) {
-                next( new RequisicaoIncorreta());
-            } else {
-                const listaLivros = await livro.find()
-                    .sort({ [campoOrdenacao]: ordem }) // Ordena os livros pelo campo e ordem especificados
-                    .skip((pagina - 1) * limite) // Calcula o número de documentos a pular com base na página e no limite
-                    .limit(Number(limite)) // Limita o número de documentos retornados com base no limite
-                    .populate("autor")
-                    .exec();
-                res.status(200).json(listaLivros);
-
-            }
+            req.resultado = buscaLivros; // Armazena a consulta de busca dos livros no objeto de resposta para ser processada pelo middleware de paginação
+            next(); // Passa o controle para o próximo middleware (middleware de paginação)
 
         } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros
@@ -103,11 +85,13 @@ class LivroController {
             const busca = await processaFiltros(req.query);
 
             if (busca !== null) {
-                const livrosPorEditora = await livro
+                const livrosPorEditora = livro
                     .find(busca) // Busca os livros que correspondem aos critérios de busca
                     .populate("autor", "nome") // Popula o campo de autor com o nome do autor
-        
-                res.status(200).json(livrosPorEditora); // Retorna a lista de livros encontrados
+                
+                req.resultado = livrosPorEditora; // Armazena a consulta de busca dos livros no objeto de resposta para ser processada pelo middleware de paginação
+                next(); // Passa o controle para o próximo middleware (middleware de paginação)
+            
             } else {
                 res.status(200).send([]); // Retorna uma lista vazia caso nenhum livro corresponda aos critérios de busca
             }
